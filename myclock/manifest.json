@@ -1,0 +1,29 @@
+{
+   "background": {
+      "persistent": true,
+      "scripts": [ 
+         "libs/FileSaver.js",
+         "libs/data-uri-toolkit.js",
+         "libs/jquery-1.10.2.js",
+         "libs/parseUri.js", 
+         "core.js" 
+      ]
+   },
+   "browser_action": {
+      "default_icon": "images/clock_19x19.png",
+      "default_popup": "popup.html"
+   },
+   "icons": {
+      "128": "images/clock_128x128.png",
+      "16": "images/clock_16x16.png"
+   },
+
+   "description": "The simplest but useful clock on chrome",
+   "manifest_version": 2,
+   "minimum_chrome_version": "23",
+   "name": "MyClock",
+   "options_page": "options.html",
+   "permissions": [ "tabs", "storage" ],
+   "update_url": "http://clients2.google.com/service/update2/crx",
+   "version": "0.4"
+}

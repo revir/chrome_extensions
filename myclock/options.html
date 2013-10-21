@@ -1,0 +1,160 @@
+<html>
+<head>
+    <link rel="stylesheet" href="css/options.css" type="text/css"></link>
+    <link rel="stylesheet" href="css/infoTip.css" type="text/css"></link>
+    <link rel="stylesheet" href="css/helpToolTip.css" type="text/css"></link>
+</head>
+<body data-i18n-values=".style.direction:global_direction;.style.textAlign:global_textAlign">
+
+
+<table id="optionsTable">
+
+
+<tr>
+    <td>
+        <div id="header">
+            <table>
+                <tr>
+                    <td style="width:100%">
+                        <img src="images/clock_128x128.png" width="50" class="title" alt="MyClock"/>
+                        <span class="title" data-i18n-content="headerTitle">MyClock</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </td>
+</tr>
+
+
+<tr id="tabsRow">
+    <td>
+        <div id="tabsContainer">
+            <div id="tabClocks" class="selected">
+                <img src="images/clock_16x16.png" style="width:16px;vertical-align:bottom;height:16px;" alt="clocks"/>
+                <span data-i18n-content="tabClocks">My Clocks</span>
+            </div>
+            <div id="tabOptions" class="normal">
+                <img src="images/options_16x16.png" style="width:16px;vertical-align:bottom;height:16px;"
+                     alt="options"/>
+                <span data-i18n-content="tabOptions">Options</span>
+            </div>
+            <div id="tabSync" class="hide">
+                <img src="images/sync_16x16.png" style="width:16px;vertical-align:bottom;height:16px;"
+                     alt="sync"/>
+                <span data-i18n-content="tabSync">Sync</span>
+            </div>
+            <div id="tabImportExport" class="hide">
+                <img src="images/save_16x16.png" style="width:16px;vertical-align:bottom;height:16px;" alt="save"/>
+                <span data-i18n-content="tabImportExport">Import/Export</span>
+            </div>
+        </div>
+    </td>
+</tr>
+
+
+<tr style="height:100%">
+<td style="vertical-align:top">
+<div id="body">
+
+
+<div id="tabClocksBody" class="tab">
+    <label>
+                            <span class="title"><input id="enableAll" type="checkbox" checked/> 
+                                <span data-i18n-content="enableAllClocks">Enable all clocks</span>
+                            </span>
+    </label>
+
+    <div id="clocks">
+        <table id="clocksTable" class="clocksTable">
+            <tr class="tableHeader">
+                <th style="width:20%" data-i18n-content="clockName">Name</th>
+                <th style="width:35%"><span data-i18n-content="clockDescription">Description</span>
+                </th>
+                <th style="width:20%"><span data-i18n-content="clockTime">Clock Time</span>
+                </th>
+                <th style="width:15%"><span data-i18n-content="clockRepeat">Repeat</span>
+                </th>
+                <th style="width:10%"><span data-i18n-content="clockAlert">Alert</span>
+                </th>
+                <th style="width:21%"><span data-i18n-content="clockCountDown">Count Down</span>
+                </th>
+                <th style="width:28px"></th>
+            </tr>
+
+            <tr class="templateRow">
+                <td>
+                    <div title="Click to edit" data-i18n-values="title:clickToEdit">
+                        <span class="clockName" data-i18n-content="newClock">New Clock</span>
+                        <input name="name" type="text"/></div>
+                </td>
+                <td class="ltr">
+                    <div title="Click to edit">
+                        <span class="clockDescription ltr">-</span>
+                        <input name="description" type="text"/>
+                    </div>
+                </td>
+                <td>
+                    <div title="Click to edit">
+                        <span class="clockTime">2013-10-19 21:00:00</span>
+                        <input name="time" type="text"/>
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        <select name="clockRepeat">
+                            <option value="Monday" data-i18n-content="Monday">Monday</option>
+                            <option value="Tuesday" data-i18n-content="Tuesday">Tuesday</option>
+                        </select></div>
+                </td>
+                <td>
+                    <div>
+                        <select name="clockAlert">
+                            <option value="alert" data-i18n-content="alert">alert</option>
+                            <option value="music" data-i18n-content="music">music</option>
+                        </select></div>
+                </td>
+                <td>
+                    <div>
+                        <span class="countDown">1000</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="deleteClock" title="Delete Clock"
+                         data-i18n-values="title:deleteClock"></div>
+                </td>
+            </tr>
+        </table>
+        <button class="button" id="btnNewClock">
+            <img src="images/add_16x16.png" alt="add"/>
+            <span data-i18n-content="newClock">New Clock</span>
+        </button>
+        <hr/>
+    </div>
+</div>
+
+
+<div class="control">
+    <hr/>
+    <table>
+        <tr>
+            <td>
+                <button class="button bold" id="save" data-i18n-content="save">
+                    Save
+                </button>
+            </td>
+            <td></td>
+            <td>
+                <button class="button" id="closeWindow" data-i18n-content="close">Close
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+</div>
+</td>
+</tr>
+</table>
+
+
+</body>
+</html>
