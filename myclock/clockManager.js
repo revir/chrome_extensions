@@ -10,16 +10,6 @@ ClockManager.alertType = {
     music: "music"
 };
 
-ClockManager.defaultClock = {
-    createTime: 1382889538999,
-    name: "Default Clock",
-    description: "Default clock",
-    clockTime: 1382889538999,
-    repeat: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-    alertType: ClockManager.alertType.alert
-    //countDown
-};
-
 ClockManager.init = function() {
     var clocks = Settings.getObject("clocks");
     if (clocks) {
@@ -56,6 +46,13 @@ ClockManager.getClocks = function getClocks() {
         }
     }
     return arr;
+};
+
+ClockManager.getClock = function getClock(clock) {
+    if (typeof(clock) === "number") {
+        return ClockManager.clocks[clock];
+    } else
+        return ClockManager.clocks[clock.createTime];
 };
 
 ClockManager.setClocks = function setclocks(clocks) {
@@ -99,15 +96,15 @@ ClockManager.flushHistoryClocks = function flushHistoryClocks() {
     ClockManager.save();
 };
 
-ClockManager.getClockStatus = function getClockStatus(clock){
-    if(typeof(clock) === "number"){
+ClockManager.getClockStatus = function getClockStatus(clock) {
+    if (typeof(clock) === "number") {
         return ClockManager.clocksStatus[clock];
-    }else{
+    } else {
         return ClockManager.clocksStatus[clock.createTime];
     }
 };
 
-ClockManager.onClockDismissed = function onClockDismissed (notificationId) {
+ClockManager.onClockDismissed = function onClockDismissed(notificationId) {
     var createTime = parseInt(notificationId, 10);
     ClockManager.dismissClock(createTime);
     if (ClockManager.clocksStatus[createTime])
@@ -115,13 +112,15 @@ ClockManager.onClockDismissed = function onClockDismissed (notificationId) {
 };
 
 ClockManager.clockTick = function clockTick() {
+    var oldClocksStatus = ClockManager.clocksStatus;
+    ClockManager.clocksStatus = {};
     var nowDate = Date.now();
     for (var i in ClockManager.clocks) {
         if (ClockManager.clocks.hasOwnProperty(i)) {
             var clock = ClockManager.clocks[i];
             if (!clock.clockTime || !clock.createTime)
                 continue;
-            var oldStatus = ClockManager.clocksStatus[i];
+            var oldStatus = oldClocksStatus[i];
             var status = {};
 
             status.ringing = oldStatus && oldStatus.ringing ? true : false;
@@ -140,7 +139,6 @@ ClockManager.clockTick = function clockTick() {
                     type: "basic",
                     title: "It's time to...",
                     message: clock.name,
-                    contextMessage: clock.description,
                     iconUrl: "images/clock_48x48.png"
                 };
                 chrome.notifications.create(String(clock.createTime), opt, ClockManager.onClockDismissed);

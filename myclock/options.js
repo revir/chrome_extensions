@@ -125,19 +125,21 @@ function exitFieldEditMode(cell) {
     if (newValue === "")
         newValue = "-"; // workaround for jQuery bug (toggling an empty span).
 
-    var clock = cell.parentNode.parentNode.clock;
-    if(input.attr('name') === 'clockTime'){
+    var row = cell.parentNode.parentNode;
+    var clock = row.clock;
+    if (input.attr('name') === 'clockTime') {
         clock.clockTime = Date.parse(newValue);
-    }
-    else
+    } else
         clock[input.attr("name")] = input.val();
 
     span.text(newValue);
     input.toggle();
     span.toggle();
 
-    if(clock.clockTime && Date.now() < clock.clockTime)
+    if (clock.clockTime && Date.now() < clock.clockTime) {
         ClockManager.updateClock(clock);
+        $(row).removeClass('newAdd');
+    }
 }
 
 function newClockRow(clock, activate) {
@@ -189,18 +191,15 @@ function newClockRow(clock, activate) {
     if (clock) {
         row[0].clock = clock;
         var status = ClockManager.getClockStatus(clock);
-        
-        row.attr('createTime', clock.createTime);
         $(".clockName", row).text(clock.name);
-        $(".clockDescription", row).text(clock.description);
-        $(".clockTime", row).text(String(clock.clockTime));
+        $(".clockTime", row).text(new Date(clock.clockTime));
         $(".clockRepeat", row).text(clock.repeat);
+        $(".countDown", row).text(String(status ? status.countDown : 0));
     } else {
         var timenow = Date.now();
-        row.attr('createTime', timenow);
+        row.addClass('newAdd');
         row[0].clock = {
             name: "New clock",
-            description: "New clock",
             clockTime: timenow,
             repeat: "no repeat",
             alertType: ClockManager.alertType.alert,
@@ -220,18 +219,20 @@ function deleteClockRow() {
 }
 
 function flushClocks() {
-    if(!clocksEnabled)
+    if (!clocksEnabled)
         return;
-    var clocks = ClockManager.getSortedClocks();
     var list = $('tr.tableRow');
-    list.each(function(index, el){
-        if(!el.clock.createTime)
+    list.each(function(index, el) {
+        if (!el.clock || !el.clock.createTime)
             return;
-        var status = ClockManager.getClockStatus(clock);
-        if(!status)
+        if ($(el).hasClass('newAdd'))
+            return;
+        var status = ClockManager.getClockStatus(el.clock);
+        var cs = ClockManager.getClock(el.clock);
+        if (!cs) {
             $(el).remove();
-        else{
-            $('span.countDown', el).text(String(status.countDown));
+        } else {
+            $('span.countDown', el).text(String(status ? status.countDown : 0));
         }
     });
 }
