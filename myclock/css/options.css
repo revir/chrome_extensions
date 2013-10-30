@@ -271,7 +271,7 @@ small {
 }
 
 
-.clocksTable td input {
+.clocksTable td.editable input {
     width: 97% !important;
     min-height: 24px;
     height: 100%;
