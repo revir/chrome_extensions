@@ -127,18 +127,14 @@ function exitFieldEditMode(cell) {
 
     var row = cell.parentNode.parentNode;
     var clock = row.clock;
-    if (input.attr('name') === 'clockTime') {
-        clock.clockTime = Date.parse(newValue);
-    } else
-        clock[input.attr("name")] = input.val();
+    clock[input.attr("name")] = input.val();
 
     span.text(newValue);
     input.toggle();
     span.toggle();
 
-    if (clock.clockTime && Date.now() < clock.clockTime) {
+    if (clock.clockTime && Date.now() < Date.parse(clock.clockTime)) {
         ClockManager.updateClock(clock);
-        $(row).removeClass('newAdd');
     }
 }
 
@@ -152,7 +148,16 @@ function newClockRow(clock, activate) {
     table.append(row);
 
     //timepicker
-    $('.timePicker', row).timepicker();
+    $('.timePicker', row).datetimepicker({
+        minDate: new Date(),
+        onClose: function(text, inst){
+            if(text){
+                var c = this.parentNode.parentNode.parentNode.clock;
+                c.clockTime = text;
+                ClockManager.updateClock(c);
+            }
+        }
+    });
 
     //bind events
     $("td.editable", row).click(function() {
@@ -195,18 +200,18 @@ function newClockRow(clock, activate) {
         row[0].clock = clock;
         var status = ClockManager.getClockStatus(clock);
         $(".clockName", row).text(clock.name);
-        $(".clockTime", row).text(new Date(clock.clockTime));
+        $(".timePicker", row).datetimepicker("setDate", clock.clockTime);
         $(".clockRepeat", row).text(clock.repeat);
         $(".countDown", row).text(String(status ? status.countDown : 0));
     } else {
-        var timenow = Date.now();
-        row.addClass('newAdd');
+        var d = new Date();
+        $(".timePicker", row).datetimepicker("setDate", d);
         row[0].clock = {
             name: "New clock",
-            clockTime: timenow,
+            clockTime: d.toLocaleString(),
             repeat: "no repeat",
             alertType: ClockManager.alertType.alert,
-            createTime: timenow
+            createTime: d.toLocaleString()
         };
     }
     if (activate) {
@@ -228,15 +233,8 @@ function flushClocks() {
     list.each(function(index, el) {
         if (!el.clock || !el.clock.createTime)
             return;
-        if ($(el).hasClass('newAdd'))
-            return;
         var status = ClockManager.getClockStatus(el.clock);
-        var cs = ClockManager.getClock(el.clock);
-        if (!cs) {
-            $(el).remove();
-        } else {
-            $('span.countDown', el).text(String(status ? status.countDown : 0));
-        }
+        $('span.countDown', el).text(String(status ? status.countDown : 0));
     });
 }
 

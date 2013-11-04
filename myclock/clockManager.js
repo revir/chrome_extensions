@@ -49,7 +49,7 @@ ClockManager.getClocks = function getClocks() {
 };
 
 ClockManager.getClock = function getClock(clock) {
-    if (typeof(clock) === "number") {
+    if (typeof(clock) === "string") {
         return ClockManager.clocks[clock];
     } else
         return ClockManager.clocks[clock.createTime];
@@ -68,7 +68,7 @@ ClockManager.updateClock = function updateClock(clock) {
 };
 
 ClockManager.removeClock = function removeClock(clock) {
-    if (typeof(clock) === "number") {
+    if (typeof(clock) === "string") {
         delete ClockManager.clocks[clock];
     } else {
         delete ClockManager.clocks[clock.createTime];
@@ -86,7 +86,7 @@ ClockManager.dismissClock = function dismissClock(createTime) {
 ClockManager.getSortedClocks = function getSortedClocks() {
     var arr = ClockManager.getClocks();
     arr = arr.sort(function(o1, o2) {
-        return parseInt(o1.createTime, 10) - parseInt(o2.createTime, 10);
+        return Date.parse(o1.createTime) - Date.parse(o2.createTime);
     });
     return arr;
 };
@@ -97,7 +97,7 @@ ClockManager.flushHistoryClocks = function flushHistoryClocks() {
 };
 
 ClockManager.getClockStatus = function getClockStatus(clock) {
-    if (typeof(clock) === "number") {
+    if (typeof(clock) === "string") {
         return ClockManager.clocksStatus[clock];
     } else {
         return ClockManager.clocksStatus[clock.createTime];
@@ -105,16 +105,14 @@ ClockManager.getClockStatus = function getClockStatus(clock) {
 };
 
 ClockManager.onClockDismissed = function onClockDismissed(notificationId) {
-    var createTime = parseInt(notificationId, 10);
-    ClockManager.dismissClock(createTime);
-    if (ClockManager.clocksStatus[createTime])
-        delete ClockManager.clocksStatus[createTime];
+    ClockManager.dismissClock(notificationId);
+    if (ClockManager.clocksStatus[notificationId])
+        delete ClockManager.clocksStatus[notificationId];
 };
 
 ClockManager.clockTick = function clockTick() {
     var oldClocksStatus = ClockManager.clocksStatus;
     ClockManager.clocksStatus = {};
-    var nowDate = Date.now();
     for (var i in ClockManager.clocks) {
         if (ClockManager.clocks.hasOwnProperty(i)) {
             var clock = ClockManager.clocks[i];
@@ -124,8 +122,7 @@ ClockManager.clockTick = function clockTick() {
             var status = {};
 
             status.ringing = oldStatus && oldStatus.ringing ? true : false;
-            var dateDiff = clock.clockTime - nowDate;
-            status.nowDate = nowDate;
+            var dateDiff = Date.parse(clock.clockTime) - Date.now();
             status.countDown = dateDiff;
             status.dayDown = Math.floor(dateDiff / (24 * 60 * 60 * 1000));
             status.hourDown = Math.floor(dateDiff / (60 * 60 * 1000));
@@ -141,7 +138,7 @@ ClockManager.clockTick = function clockTick() {
                     message: clock.name,
                     iconUrl: "images/clock_48x48.png"
                 };
-                chrome.notifications.create(String(clock.createTime), opt, ClockManager.onClockDismissed);
+                chrome.notifications.create(clock.createTime, opt, ClockManager.onClockDismissed);
             }
         }
     }
