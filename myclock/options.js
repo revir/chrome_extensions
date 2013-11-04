@@ -151,12 +151,15 @@ function newClockRow(clock, activate) {
     row.removeClass("templateRow").addClass("tableRow");
     table.append(row);
 
+    //timepicker
+    $('.timePicker', row).timepicker();
+
     //bind events
-    $("td", row).click(function() {
+    $("td.editable", row).click(function() {
         if (clocksEnabled)
             enterFieldEditMode(this);
     });
-    $("input", row).blur(function() {
+    $("td.editable input", row).blur(function() {
         exitFieldEditMode(this.parentNode);
     }).keypress(function() {
         if (event.keyCode == 13) // Enter Key
