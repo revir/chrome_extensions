@@ -80,11 +80,9 @@
                 </th> -->
                 <th style="width:30%"><span data-i18n-content="clockTime">Clock Time</span>
                 </th>
-                <th style="width:15%"><span data-i18n-content="clockRepeat">Repeat</span>
+                <th style="width:20%"><span data-i18n-content="clockRepeat">Repeat</span>
                 </th>
-                <th style="width:10%"><span data-i18n-content="clockAlertType">Alert Type</span>
-                </th>
-                <th style="width:15%"><span data-i18n-content="clockCountDown">Count Down</span>
+                <th style="width:50%"><span data-i18n-content="clockCountDown">Count Down</span>
                 </th>
                 <th style="width:28px"></th>
             </tr>
@@ -109,20 +107,17 @@
                 </td>
                 <td>
                     <div>
-                        <span class="clockRepeat">just one time</span>
-                        <input name="repeat" type="text"/>
+                        <select name="clockRepeat">
+                            <option value="noRepeat" data-i18n-content="noRepeat">no repeat</option>
+                            <option value="daily" data-i18n-content="daily">daily</option>
+                            <option value="weekly" data-i18n-content="weekly">weekly</option>
+                            <option value="monthly" data-i18n-content="monthly">monthly</option>
+                        </select>
                     </div>
                 </td>
                 <td>
                     <div>
-                        <select name="clockAlertType">
-                            <option value="alert" data-i18n-content="alert">alert</option>
-                            <option value="music" data-i18n-content="music">music</option>
-                        </select></div>
-                </td>
-                <td>
-                    <div>
-                        <span class="countDown">1000</span>
+                        <span class="countDown">0</span>
                     </div>
                 </td>
                 <td>

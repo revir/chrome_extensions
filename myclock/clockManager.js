@@ -1,8 +1,6 @@
 var ClockManager = {};
 
 ClockManager.clocks = {};
-ClockManager.historyClocks = {};
-ClockManager.clocksStatus = {};
 ClockManager.enabled = true;
 
 ClockManager.alertType = {
@@ -10,22 +8,29 @@ ClockManager.alertType = {
     music: "music"
 };
 
+ClockManager.repeatType = {
+    none: "noRepeat",
+    daily: "daily",
+    weekly: "weekly",
+    monthly: "monthly"
+};
+
 ClockManager.init = function() {
     var clocks = Settings.getObject("clocks");
     if (clocks) {
         ClockManager.clocks = clocks;
     }
-    var historyClocks = Settings.getObject("historyClocks");
-    if (historyClocks) {
-        ClockManager.historyClocks = historyClocks;
-    }
+    // var historyClocks = Settings.getObject("historyClocks");
+    // if (historyClocks) {
+    //     ClockManager.historyClocks = historyClocks;
+    // }
 
     ClockManager.enabled = Settings.getValue("enableClocks", true);
 };
 
 ClockManager.save = function saveClocks() {
     Settings.setObject("clocks", ClockManager.clocks);
-    Settings.setObject("historyClocks", ClockManager.historyClocks);
+    // Settings.setObject("historyClocks", ClockManager.historyClocks);
     Settings.setValue("enableClocks", ClockManager.enabled);
 };
 
@@ -76,12 +81,12 @@ ClockManager.removeClock = function removeClock(clock) {
     ClockManager.save();
 };
 
-ClockManager.dismissClock = function dismissClock(createTime) {
-    var c = $.extend(true, {}, ClockManager.clocks[createTime]);
-    ClockManager.historyClocks[createTime] = c;
-    ClockManager.removeClock(createTime);
-    ClockManager.flushHistoryClocks();
-};
+// ClockManager.dismissClock = function dismissClock(createTime) {
+//     var c = $.extend(true, {}, ClockManager.clocks[createTime]);
+//     ClockManager.historyClocks[createTime] = c;
+//     ClockManager.removeClock(createTime);
+//     ClockManager.flushHistoryClocks();
+// };
 
 ClockManager.getSortedClocks = function getSortedClocks() {
     var arr = ClockManager.getClocks();
@@ -91,54 +96,70 @@ ClockManager.getSortedClocks = function getSortedClocks() {
     return arr;
 };
 
-ClockManager.flushHistoryClocks = function flushHistoryClocks() {
-    //TODO: withyear or withmonth or withinweek etc...
-    ClockManager.save();
-};
+// ClockManager.flushHistoryClocks = function flushHistoryClocks() {
+//     //TODO: withyear or withmonth or withinweek etc...
+//     ClockManager.save();
+// };
 
-ClockManager.getClockStatus = function getClockStatus(clock) {
-    if (typeof(clock) === "string") {
-        return ClockManager.clocksStatus[clock];
+// ClockManager.getClockStatus = function getClockStatus(clock) {
+//     if (typeof(clock) === "string") {
+//         return ClockManager.clocksStatus[clock] || {};
+//     } else {
+//         return ClockManager.clocksStatus[clock.createTime] || {};
+//     }
+// };
+
+// ClockManager.onClockDismissed = function onClockDismissed(notificationId) {
+//     ClockManager.dismissClock(notificationId);
+//     if (ClockManager.clocksStatus[notificationId])
+//         delete ClockManager.clocksStatus[notificationId];
+// };
+
+ClockManager.getClockCountDown = function(clock) {
+    if (typeof(clock) === 'string') {
+        return ClockManager.clocks[clock].countDown;
     } else {
-        return ClockManager.clocksStatus[clock.createTime];
+        return ClockManager.clocks[clock.createTime].countDown;
     }
 };
 
-ClockManager.onClockDismissed = function onClockDismissed(notificationId) {
-    ClockManager.dismissClock(notificationId);
-    if (ClockManager.clocksStatus[notificationId])
-        delete ClockManager.clocksStatus[notificationId];
-};
-
 ClockManager.clockTick = function clockTick() {
-    var oldClocksStatus = ClockManager.clocksStatus;
-    ClockManager.clocksStatus = {};
+    if (!ClockManager.enabled)
+        return;
+    var func = function() {};
     for (var i in ClockManager.clocks) {
         if (ClockManager.clocks.hasOwnProperty(i)) {
             var clock = ClockManager.clocks[i];
+            var dateDiff = Date.parse(clock.clockTime) - Date.now();
+
             if (!clock.clockTime || !clock.createTime)
                 continue;
-            var oldStatus = oldClocksStatus[i];
-            var status = {};
+            if (clock.countDown && clock.countDown <= 0 && dateDiff <= 0) {
+                if (clock.repeat === ClockManager.repeatType.none)
+                    continue;
 
-            status.ringing = oldStatus && oldStatus.ringing ? true : false;
-            var dateDiff = Date.parse(clock.clockTime) - Date.now();
-            status.countDown = dateDiff;
-            status.dayDown = Math.floor(dateDiff / (24 * 60 * 60 * 1000));
-            status.hourDown = Math.floor(dateDiff / (60 * 60 * 1000));
-            status.minuteDown = Math.floor(dateDiff / (60 * 1000));
-            status.secondDown = Math.floor(dateDiff / 1000);
-            ClockManager.clocksStatus[i] = status;
+                var od = new Date(clock.clockTime);
 
-            if (ClockManager.enabled && dateDiff <= 0 && !status.ringing) {
-                ClockManager.clocksStatus[i].ringing = true;
+                if (clock.repeat === ClockManager.repeatType.daily)
+                    od.setDate(od.getDate() + 1);
+                else if (clock.repeat === ClockManager.repeatType.weekly)
+                    od.setDate(od.getDate() + 7);
+                else if (clock.repeat === ClockManager.repeatType.monthly)
+                    od.setMonth(od.getMonth() + 1);
+
+                dateDiff = od.getTime() - Date.now();
+                clock.clockTime = od.toLocaleString();
+            }
+
+            clock.countDown = Math.floor(dateDiff / 1000);
+            if (clock.countDown <= 0) {
                 var opt = {
                     type: "basic",
-                    title: "It's time to...",
-                    message: clock.name,
+                    title: "Time's up!",
+                    message: clock.clockTime + ' : ' + clock.name,
                     iconUrl: "images/clock_48x48.png"
                 };
-                chrome.notifications.create(clock.createTime, opt, ClockManager.onClockDismissed);
+                chrome.notifications.create(clock.createTime, opt, func);
             }
         }
     }

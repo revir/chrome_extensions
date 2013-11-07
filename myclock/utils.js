@@ -21,9 +21,9 @@
 var Utils = {};
 
 Utils.OS = {
-    isMac:(/mac/i).test(navigator.userAgent), // maybe should test |navigator.platform| instead?
-    isWindows:(/win/i).test(navigator.userAgent),
-    isLinux:(/linux/i).test(navigator.userAgent)
+    isMac: (/mac/i).test(navigator.userAgent), // maybe should test |navigator.platform| instead?
+    isWindows: (/win/i).test(navigator.userAgent),
+    isLinux: (/linux/i).test(navigator.userAgent)
 };
 
 Utils.compareStrings = function compareStrings(s1, s2) {
@@ -42,4 +42,29 @@ Utils.compareStrings = function compareStrings(s1, s2) {
 
 Utils.compareNamedObjects = function compareNamedObjects(o1, o2) {
     return Utils.compareStrings(o1.name, o2.name);
+};
+
+
+Utils.secondsToString = function(sec) {
+    if (typeof(sec) != 'number' || sec <= 0)
+        return '0';
+
+    var numberEnding = function(number) { //todo: replace with a wiser code
+        return (number > 1) ? 's' : '';
+    };
+
+    var text = '';
+    var dayDown = Math.floor(sec / (24 * 60 * 60));
+    text += dayDown ? dayDown + ' day' + numberEnding(dayDown) + ' ' : '';
+
+    var hourDown = Math.floor(sec / (60 * 60)) % 24;
+    text += dayDown || hourDown ? hourDown + ' hour' + numberEnding(hourDown) + ' ' : '';
+
+    var minuteDown = Math.floor(sec / 60) % 60;
+    text += dayDown || hourDown || minuteDown ? minuteDown + ' minute' + numberEnding(minuteDown) + ' ' : '';
+
+    var secondDown = Math.floor(sec) % 60;
+    text += dayDown || hourDown || minuteDown || secondDown ? secondDown + ' second' + numberEnding(secondDown) : '';
+
+    return text ? text : '0';
 };
