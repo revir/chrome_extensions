@@ -8,7 +8,7 @@
         "scripts": ["core.js"]  
     },
     "content_scripts": [ {
-        "js": [ "jquery-1.10.2.js", "page.js" ],
+        "js": [ "jquery-1.10.2.js", "common.js", "page.js" ],
         "css": ["css/klip.css"],
         "matches": [ "file:///*/socialHelper_temp.html", "*://weibo.com/*" ],
         "run_at": "document_end"
