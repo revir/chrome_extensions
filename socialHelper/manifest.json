@@ -1,0 +1,20 @@
+{
+    "manifest_version": 2,
+    "name": "socialHelper",
+    "description": "Wisely help you on social website",
+    "permissions": ["*://*/*","tabs"], 
+    "background": {
+        "persistent": false,
+        "scripts": ["core.js"]  
+    },
+    "content_scripts": [ {
+        "js": [ "jquery-1.10.2.js", "page.js" ],
+        "css": ["css/klip.css"],
+        "matches": [ "file:///*/socialHelper_temp.html", "*://weibo.com/*" ],
+        "run_at": "document_end"
+    } ],
+    "minimum_chrome_version": "23",
+    "version": "0.1",
+    "update_url": "http://clients2.google.com/service/update2/crx"
+}
+
