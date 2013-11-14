@@ -1,27 +1,38 @@
-var _post_data = null;
-
-function updatePostData(data) {
-	if (data)
-		_post_data = jQuery.extend(true, {}, data);
-	else
-		_post_data = null;
-}
+var _post_data = {};
+console.info('[temp] core init...');
 
 chrome.runtime.onMessage.addListener(
 	function(request, sender, sendResponse) {
 		if (request.type === 'postToSocial') {
-			updatePostData(request);
-			setTimeout(function(){
-				console.log('timeout: _post_data will be cleared');
-				updatePostData({});
+			_post_data = jQuery.extend(true, {}, request);
+			setTimeout(function() {
+				console.info('timeout: _post_data will be cleared');
+				_post_data = {};
 			}, request.keepTime);
-			chrome.tabs.create({
-				url: request.socialWebSite
+
+			jQuery.each(_post_data.socialWebSite, function(index, url) {
+				chrome.tabs.create({
+					url: url
+				});
 			});
 		} else if (request.type === 'getInfo') {
-			sendResponse(_post_data);
+			console.info('getInfo event: '+request.url);
+			var t = jQuery.extend(true, {}, _post_data);
+			sendResponse(t);
 		} else if (request.type === 'postDone') {
-			if(request.weibo)
-				delete _post_data.weibo;
+			if (request.url) {
+				console.info('postDone event: ' + request.url);
+				if (!_post_data.socialWebSite) {
+					console.info('but the _post_data is already empty.');
+					return;
+				}
+				var i = _post_data.socialWebSite.indexOf(request.url);
+				if (i !== -1) {
+					_post_data.socialWebSite.splice(i, 1);
+				}
+				if (_post_data.socialWebSite.length === 0) {
+					_post_data = {};
+				}
+			}
 		}
 	});

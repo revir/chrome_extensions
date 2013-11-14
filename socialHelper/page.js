@@ -8,10 +8,10 @@ function processFile() {
 	data.type = 'postToSocial';
 	data.content = pNode.text();
 	data.keepTime = 5 * 60 * 1000;
+	data.socialWebSite = [];
 	console.log(data.content);
 	if (pNode.hasClass('social_weibo')) {
-		data.weibo = true;
-		data.socialWebSite = 'http://weibo.com';
+		data.socialWebSite[data.socialWebSite.length] = 'http://weibo.com';
 	}
 
 	chrome.runtime.sendMessage(data);
@@ -48,7 +48,7 @@ function processWeibo(data) {
 		console.info('post to weibo successfully!');
 		chrome.runtime.sendMessage({
 			type: 'postDone',
-			weibo: true
+			url: location.origin
 		});
 	});
 
@@ -59,12 +59,17 @@ jQuery(document).ready(function() {
 		processFile();
 	} else {
 		chrome.runtime.sendMessage({
-			type: 'getInfo'
+			type: 'getInfo',
+			url: location.origin
 		}, function(response) {
-			if (response && response.weibo) {
-				processWeibo(response);
-			} else
-				console.log('nothing');
+			if (response && response.socialWebSite && response.socialWebSite.length) {
+				if (response.socialWebSite.indexOf(location.origin) !== -1) {
+					if (location.origin === 'http://weibo.com') {
+						return processWeibo(response);
+					}
+				}
+			}
+			console.log('nothing');
 		});
 	}
 });
