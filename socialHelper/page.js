@@ -18,15 +18,14 @@ function processFile() {
 	// window.close();
 }
 
-function checkWeiboLogin(data) {
-	if (!/\/u\//.test(location.pathname)) {
-		alert('you didn\'t login yet, please login in ' + data.keepTime / (60 * 1000) + ' minutes, otherwise it will be timeout.');
-		return false;
-	}
-	return true;
-}
-
 function processWeibo(data) {
+	var checkWeiboLogin = function(data) {
+		if (!/\/u\//.test(location.pathname)) {
+			alert('you didn\'t login yet, please login in ' + data.keepTime / (60 * 1000) + ' minutes, otherwise it will be timeout.');
+			return false;
+		}
+		return true;
+	};
 	waitForAjax('textarea.input_detail', '', function(success) {
 		if (!success) {
 			if (checkWeiboLogin(data)) {
@@ -44,7 +43,7 @@ function processWeibo(data) {
 		textArea[0].value = data.content;
 		textArea[0].focus();
 		//[temp]
-		//sendBtn[0].click();
+		// sendBtn[0].click();
 		console.info('post to weibo successfully!');
 		chrome.runtime.sendMessage({
 			type: 'postDone',
@@ -52,6 +51,26 @@ function processWeibo(data) {
 		});
 	});
 
+}
+
+function processGooglePlus(data) {
+	var checkLogin = function(){
+		if(/account/.test(location.origin)){
+			alert('you didn\'t login yet, please login in ' + data.keepTime / (60 * 1000) + ' minutes, otherwise it will be timeout.');
+			return false;
+		}
+		return true;
+	};
+	waitForAjax('div[guidedhelpid="sharebox_textarea"]', '', function(success) {
+		if(!success){
+			if(checkLogin()){
+				alert('Cannot find the input area');
+				return;
+			}
+			return;
+		}
+		var node = jQuery('div[guidedhelpid="sharebox_textarea"]');
+	});
 }
 
 jQuery(document).ready(function() {
