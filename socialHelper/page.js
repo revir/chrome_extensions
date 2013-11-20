@@ -15,18 +15,19 @@ function processFile() {
 	data.keepTime = 5 * 60 * 1000;
 	data.socialWebSite = [];
 	console.log(data.content);
-	if (pNode.hasClass('social_weibo')) {
+	if (pNode.hasClass('weibo')) {
 		data.socialWebSite[data.socialWebSite.length] = gsite.weibo_host;
 	}
-	if (pNode.hasClass('social_twitter')) {
+	if (pNode.hasClass('twitter')) {
 		data.socialWebSite[data.socialWebSite.length] = gsite.twitter_host;
 	}
-	if (pNode.hasClass('social_googleplus')) {
+	if (pNode.hasClass('googleplus')) {
 		data.socialWebSite[data.socialWebSite.length] = gsite.googleplus_host;
 	}
 
-	chrome.runtime.sendMessage(data);
-	// window.close();
+	chrome.runtime.sendMessage(data, function(msg){
+		window.close();
+	});
 }
 
 function processWeibo(data) {
@@ -40,7 +41,7 @@ function processWeibo(data) {
 	waitForAjax('textarea.input_detail', '', function(success) {
 		if (!success) {
 			if (checkWeiboLogin(data)) {
-				alert('Cannot find the input area');
+				alert('Cannot find the input area on weibo');
 				return;
 			}
 			return;
@@ -60,7 +61,7 @@ function processWeibo(data) {
 				type: 'postDone',
 				url: location.origin
 			});
-		}, 1000);
+		}, 2000);
 	});
 
 }
@@ -163,7 +164,7 @@ jQuery(document).ready(function() {
 					}
 				}
 			}
-			console.log('nothing');
+			console.log('nothing, url: '+location.origin);
 		});
 	}
 });

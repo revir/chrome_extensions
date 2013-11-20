@@ -4,7 +4,7 @@
     "description": "Wisely help you on social website",
     "permissions": ["file:///*/socialHelper_temp.html", "*://weibo.com/*","*://twitter.com/*", "*://plus.google.com/*", "tabs"], 
     "background": {
-        "persistent": false,
+        "persistent": true,
         "scripts": ["jquery-1.10.2.js", "core.js"]  
     },
     "content_scripts": [ {

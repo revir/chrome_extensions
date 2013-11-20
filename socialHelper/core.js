@@ -15,6 +15,7 @@ chrome.runtime.onMessage.addListener(
 					url: url
 				});
 			});
+			sendResponse('good');
 		} else if (request.type === 'getInfo') {
 			console.info('getInfo event: '+request.url);
 			var t = jQuery.extend(true, {}, _post_data);
