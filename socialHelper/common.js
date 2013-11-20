@@ -18,3 +18,9 @@ function waitForAjax(selector, context, process, time) {
 
 	id = window.setInterval(doPage, interval);
 }
+
+function autoKeypress(element) {
+	var e = new KeyboardEvent('KeyboardEvent');
+	e.initKeyboardEvent('keypress');
+	element.dispatchEvent(e);
+}

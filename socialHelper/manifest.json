@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "socialHelper",
     "description": "Wisely help you on social website",
-    "permissions": ["file:///*/socialHelper_temp.html", "*://weibo.com/*","tabs"], 
+    "permissions": ["file:///*/socialHelper_temp.html", "*://weibo.com/*","*://twitter.com/*", "*://plus.google.com/*", "tabs"], 
     "background": {
         "persistent": false,
         "scripts": ["jquery-1.10.2.js", "core.js"]  
@@ -10,7 +10,7 @@
     "content_scripts": [ {
         "js": [ "jquery-1.10.2.js", "common.js", "page.js" ],
         "css": ["css/klip.css"],
-        "matches": [ "file:///*/socialHelper_temp.html", "*://weibo.com/*" ],
+        "matches": [ "file:///*/socialHelper_temp.html", "*://twitter.com/*", "*://plus.google.com/*", "*://weibo.com/*" ],
         "run_at": "document_end"
     } ],
     "minimum_chrome_version": "23",
