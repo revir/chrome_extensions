@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "socialHelper",
     "description": "Wisely help you on social website",
-    "permissions": ["file:///*/socialHelper_temp.html", "*://weibo.com/*","*://twitter.com/*", "*://plus.google.com/*", "tabs"], 
+    "permissions": ["tabs"], 
     "background": {
         "persistent": true,
         "scripts": ["jquery-1.10.2.js", "core.js"]  

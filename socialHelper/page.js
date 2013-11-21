@@ -55,6 +55,7 @@ function processWeibo(data) {
 		textArea[0].value = data.content;
 		textArea[0].focus();
 		setTimeout(function(){
+			sendBtn = jQuery('a.send_btn');
 			sendBtn[0].click();
 			console.info('post to weibo successfully!');
 			chrome.runtime.sendMessage({
@@ -92,6 +93,7 @@ function processTwitter(data) {
 		node[0].focus();
 		node[0].innerText = data.content;
 		setTimeout(function() {
+			var tbtn = jQuery('div.home-tweet-box button.js-tweet-btn');
 			tbtn[0].click();
 			console.info('post to twitter successfully!');
 			chrome.runtime.sendMessage({
