@@ -52,8 +52,8 @@ function processWeibo(data) {
 			alert('Cannot find the input area or send button on weibo');
 			return;
 		}
-		textArea[0].value = data.content;
 		textArea[0].focus();
+		textArea[0].value = data.content;
 		setTimeout(function(){
 			sendBtn = jQuery('a.send_btn');
 			sendBtn[0].click();
