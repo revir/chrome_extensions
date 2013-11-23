@@ -54,6 +54,8 @@ function processWeibo(data) {
 		}
 		textArea[0].focus();
 		textArea[0].value = data.content;
+		autoKeypress(textArea[0]);
+		
 		setTimeout(function(){
 			sendBtn = jQuery('a.send_btn');
 			sendBtn[0].click();
@@ -92,6 +94,7 @@ function processTwitter(data) {
 		}
 		node[0].focus();
 		node[0].innerText = data.content;
+
 		setTimeout(function() {
 			var tbtn = jQuery('div.home-tweet-box button.js-tweet-btn');
 			tbtn[0].click();
