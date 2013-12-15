@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "littleDict",
+    "description": "web dictionary",
+    "permissions": ["tabs", "*://services.aonaware.com/*"],
+    "background": {
+        "persistent": true,
+        "scripts": ["js/jquery-1.10.2.js", "core.js"]
+    },
+    "content_scripts": [{
+        "js": ["js/jquery-1.10.2.js","js/jquery.scoped.js", "js/bootstrap.js", "common.js", "page.js"],
+        // "css": ["css/bootstrap.min.css"],
+        "matches": ["<all_urls>"],
+        "run_at": "document_end"
+    }],
+    "web_accessible_resources": [
+        "css/bootstrap.css",
+        "minidict.html"
+    ],
+    "minimum_chrome_version": "23",
+    "version": "0.2",
+    "update_url": "http://clients2.google.com/service/update2/crx"
+}
