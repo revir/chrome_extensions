@@ -3,6 +3,8 @@ var ClockManager = {};
 ClockManager.clocks = {};
 ClockManager.enabled = true;
 
+ClockManager.audio = null;
+
 ClockManager.alertType = {
     alert: "alert",
     music: "music"
@@ -20,10 +22,10 @@ ClockManager.init = function() {
     if (clocks) {
         ClockManager.clocks = clocks;
     }
-    // var historyClocks = Settings.getObject("historyClocks");
-    // if (historyClocks) {
-    //     ClockManager.historyClocks = historyClocks;
-    // }
+    //init audio
+    ClockManager.audio = $('<input>');
+    ClockManager.audio.attr('type', 'text');
+    ClockManager.audio.attr('src', 'http://m1.music.126.net/3p33jB2LJHJQFocxm8T0mg==/5660285859848175.mp3');
 
     ClockManager.enabled = Settings.getValue("enableClocks", true);
 };
@@ -159,6 +161,8 @@ ClockManager.clockTick = function clockTick() {
                     message: clock.clockTime + ' : ' + clock.name,
                     iconUrl: "images/clock_48x48.png"
                 };
+                if(ClockManager.audio)
+                    ClockManager.audio[0].play();
                 chrome.notifications.create(clock.createTime, opt, func);
             }
         }

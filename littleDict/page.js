@@ -18,19 +18,26 @@
 //  Author: Revir Qing (aguidetoshanghai.com)
 //  URL: www.aguidetoshanghai.com
 
+var loadingHtml = '<i class="icon-spinner icon-spin icon-2x pull-left"></i>正在查询...';
+
 jQuery.scoped(); // Initialize the plugin
 
 // jQuery(document.body).append('<div id="littleDict_wrapper"><style scoped> @import url(\'css/bootstrap.css\');  </style> <div id="littleDict_minidict"></div> </div>');
-jQuery(document.body).append('<div id="littleDict_wrapper"><style scoped> </style> <div id="littleDict_minidict"></div> </div>');
+jQuery(document.body).append('<div class="littleDictDiv"><style scoped> </style> <div class="littleDictWrapper"></div> </div>');
 // jQuery("#littleDict_wrapper").append('<div id="littleDict_minidict"></div>');
 //initialize minidict
 jQuery.get(chrome.extension.getURL('css/bootstrap.css'), function(cssdata) {
-	jQuery('#littleDict_wrapper style').html(cssdata);
+	jQuery('.littleDictDiv style').html(cssdata);
+	jQuery.get(chrome.extension.getURL('css/font-awesome.css'), function(cssdata) {
+		jQuery('.littleDictDiv style').append(cssdata);
+		jQuery.get(chrome.extension.getURL('css/custom.css'), function(cssdata) {
+			jQuery('.littleDictDiv style').append(cssdata);
 
-	jQuery.get(chrome.extension.getURL('/minidict.html'), function(minidict_html) {
-		jQuery('#littleDict_minidict').html(minidict_html);
+			jQuery.get(chrome.extension.getURL('/minidict.html'), function(minidict_html) {
+				jQuery('.littleDictWrapper').html(minidict_html);
+			}, 'text');
+		}, 'text');
 	}, 'text');
-
 }, 'text');
 
 function parseAonaware(text) {
@@ -41,22 +48,19 @@ function parseAonaware(text) {
 			meaning = jQuery('WordDefinition', this).text();
 		console.log('dictName: ' + dictName);
 
+		$('#littleDict .dict-result').text(meaning);
 
-		$('#littleDict_minidict #minidictLabel').text(dictName);
-		$('#littleDict_minidict .modal-body').text(meaning);
-
-		// jQuery(selNode.baseNode.parentNode).popover({
-		// 	trigger: 'manual',
-		// 	title: word + '----' + dictName,
-		// 	// selector: 'h1 a',
-		// 	content: meaning
-		// }).popover('show');
-
-		jQuery('#minidict').modal({
-			show: true
-		});
 		return false;
 	});
+}
+
+function parseDictCN(text) {
+	// var xmlobject = new DOMParser().parseFromString(text, "text/xml");
+	// var style = $('style', xmlobject).text();
+	// var st = '<style scoped>'+style+'</stype>';
+	var frame = document.createElement('iframe');
+	frame.src = 'http://dict.cn';
+	$('#littleDict .dict-result').append(res);
 }
 
 jQuery(document).mouseup(function() {
@@ -64,14 +68,29 @@ jQuery(document).mouseup(function() {
 	var sel = selNode.toString();
 	if (sel.length) {
 		console.log('select words: ' + sel);
+
+		$('#littleDict .dict-result').html(loadingHtml);
+		jQuery('#littleDict').modal({
+			show: true
+		});
+
 		chrome.runtime.sendMessage({
 			type: 'defineWord',
-			word: sel
+			word: sel,
+			dictName: 'dict.cn'
 		}, function(response) {
+			$('#littleDict .dict-result').html('');
+
 			if (!response) {
 				console.error('define word error!');
-			} else {
-				parseAonaware(response);
+				$('#littleDict .dict-result').text('查询错误!');
+				return;
+			}
+
+			if (response.dict.site === 'aonaware') {
+				parseAonaware(response.data);
+			} else if (response.dict.site === 'dict.cn') {
+				parseDictCN(response.data);
 			}
 		});
 	}

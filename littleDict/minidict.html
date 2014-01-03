@@ -1,18 +1,56 @@
 <!-- Modal -->
-<div class="modal" id="minidict" tabindex="-1" role="dialog" aria-labelledby="minidictLabel" aria-hidden="true">
+<div class="modal in" id="littleDict" tabindex="-1" role="dialog" aria-labelledby="minidictLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="minidictLabel">dictionary-name</h4>
+
+        <!-- input box -->
+        <form class="form-inline" role="form">
+          <div class="form-group">
+            <input type="text" class="form-control" id="dict_input" placeholder="input word">
+          </div>
+
+          <button type="submit" class="btn btn-sm btn-primary" id="dict_query">查词</button>
+          <button type="submit" class="btn btn-sm btn-primary" id="dict_translate">翻译</button>
+
+
+          <i class="icon-circle-arrow-left icon-large"></i>
+          <div class="form-group">
+            <div class="dropdown">
+              <a data-toggle="dropdown" href="#">Dropdown trigger
+                  <span class="caret"></span>
+              </a>
+
+              <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a>
+                </li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a>
+                </li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a>
+                </li>
+                <li role="presentation" class="divider"></li>
+                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <i class="icon-circle-arrow-right icon-large"></i>
+        </form>
+
       </div>
       <div class="modal-body">
-        dictionary-text
+        <p class="dict-result">
+          
+        </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <!-- <button type="button" class="btn btn-primary">Star</button> -->
+
       </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

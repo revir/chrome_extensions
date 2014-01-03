@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "littleDict",
     "description": "web dictionary",
-    "permissions": ["tabs", "*://services.aonaware.com/*"],
+    "permissions": ["tabs", "<all_urls>"],
     "background": {
         "persistent": true,
         "scripts": ["js/jquery-1.10.2.js", "core.js"]
@@ -10,12 +10,18 @@
     "content_scripts": [{
         "js": ["js/jquery-1.10.2.js","js/jquery.scoped.js", "js/bootstrap.js", "common.js", "page.js"],
         // "css": ["css/bootstrap.min.css"],
-        "matches": ["<all_urls>"],
-        "run_at": "document_end"
+        "matches": ["<all_urls>"]
     }],
     "web_accessible_resources": [
         "css/bootstrap.css",
-        "minidict.html"
+        "css/font-awesome.css",
+        "css/custom.css",
+        "minidict.html",
+        "font/FontAwesome.otf",
+        "font/fontawesome-webfont.ttf",
+        "font/fontawesome-webfont.eot",
+        "font/fontawesome-webfont.woff",
+        "font/fontawesome-webfont.svg"
     ],
     "minimum_chrome_version": "23",
     "version": "0.2",
