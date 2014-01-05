@@ -57,7 +57,7 @@ function postToCiba(word, onSuccess, onFail) {
 		w: word,
 		key: '0AAE477DB66EC58D12E1451877045CA5'
 	};
-	$.post(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
+	$.get(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
 }
 
 chrome.runtime.onMessage.addListener(

@@ -34,7 +34,9 @@ jQuery.get(chrome.extension.getURL('css/bootstrap.css'), function(cssdata) {
 			jQuery('.littleDictDiv style').append(cssdata);
 
 			jQuery.get(chrome.extension.getURL('/minidict.html'), function(minidict_html) {
-				jQuery('.littleDictWrapper').html(minidict_html);
+				var h = jQuery.parseHTML(minidict_html);
+
+				jQuery('.littleDictWrapper').html(jQuery('#littleDict', h));
 			}, 'text');
 		}, 'text');
 	}, 'text');
@@ -61,6 +63,11 @@ function parseDictCN(text) {
 	var frame = document.createElement('iframe');
 	frame.src = 'http://dict.cn';
 	$('#littleDict .dict-result').append(res);
+}
+
+function parseIciba(text){
+	var xml = jQuery.parseXML(text);
+	$('#littleDict .dict-result').append(xml);
 }
 
 jQuery(document).mouseup(function() {
@@ -91,6 +98,8 @@ jQuery(document).mouseup(function() {
 				parseAonaware(response.data);
 			} else if (response.dict.site === 'dict.cn') {
 				parseDictCN(response.data);
+			} else if (response.dict.site === 'iciba.com'){
+				parseIciba(response.data);
 			}
 		});
 	}
