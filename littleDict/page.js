@@ -66,8 +66,28 @@ function parseDictCN(text) {
 }
 
 function parseIciba(text){
+	var d = $(document.createElement('div'));
 	var xml = jQuery.parseXML(text);
-	$('#littleDict .dict-result').append(xml);
+	d.append('<h3>'+jQuery('ps', xml).text() + '</h3>');
+
+	var audio = jQuery('pron', xml).text();
+	if(audio){
+		d.append('<span audio="'+audio+'" class="glyphicon glyphicon-sound-stereo sound"></span>');
+	}
+	jQuery('pos', xml).each(function(i, el){
+		var m = $(el).next().text();
+		var s = '<p>'+$(el).text()+'<b>'+m+'</b>'+'</p>';
+		d.append(s);
+	});
+	jQuery('orig', xml).each(function(i, el){
+		var m = $(el).next().text();
+		var s = '<p>' + $(el).text() + '</p>';
+		var s2 = '<p>' + m + '</p>';
+		d.append(s);
+		d.append(s2);
+		d.append('<br>');
+	});
+	$('#littleDict .dict-result').append(d);
 }
 
 jQuery(document).mouseup(function() {
@@ -84,7 +104,7 @@ jQuery(document).mouseup(function() {
 		chrome.runtime.sendMessage({
 			type: 'defineWord',
 			word: sel,
-			dictName: 'dict.cn'
+			dictName: 'iciba.com'
 		}, function(response) {
 			$('#littleDict .dict-result').html('');
 
