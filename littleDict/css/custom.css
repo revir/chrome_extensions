@@ -5,3 +5,13 @@
 .modal-header .icon-circle-arrow-right {
 	margin-left: 5px;
 }
+
+.modal-body .pron{
+    color: rgb(58, 120, 213);
+}
+.modal-body .example{
+    color: rgb(162, 111, 20);
+}
+.modal-body .icon-coffee, .modal-body .icon-volume-up{
+    color: black;
+}

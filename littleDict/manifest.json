@@ -5,7 +5,7 @@
     "permissions": ["tabs", "<all_urls>"],
     "background": {
         "persistent": true,
-        "scripts": ["js/jquery-1.10.2.js", "core.js"]
+        "scripts": ["js/jquery-1.10.2.js", "settings.js", "core.js"]
     },
     "content_scripts": [{
         "js": ["js/jquery-1.10.2.js","js/jquery.scoped.js", "js/bootstrap.js", "common.js", "page.js"],
@@ -21,8 +21,17 @@
         "font/fontawesome-webfont.ttf",
         "font/fontawesome-webfont.eot",
         "font/fontawesome-webfont.woff",
-        "font/fontawesome-webfont.svg"
+        "font/fontawesome-webfont.svg",
+        "images/icon-on19.png",
+        "images/icon-off19.png"
     ],
+
+    "browser_action":{
+        "default_icon": {
+            "19": "images/icon-on19.png",    
+            "38": "images/icon-on38.png"  
+        }
+    },
     "minimum_chrome_version": "23",
     "version": "0.2",
     "update_url": "http://clients2.google.com/service/update2/crx"

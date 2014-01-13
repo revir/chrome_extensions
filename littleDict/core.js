@@ -21,76 +21,111 @@
 console.info('[temp] core init...');
 
 var allDicts = [{
-	'dictId': 'dict.cn',
-	'dictName': 'dict.cn',
-	'site': 'dict.cn'
+    'dictId': 'dict.cn',
+    'dictName': 'dict.cn',
+    'site': 'dict.cn'
 }, {
-	'dictId': 'wn',
-	'dictName': 'WordNet (r) 2.0',
-	'site': 'aonaware'
+    'dictId': 'wn',
+    'dictName': 'WordNet (r) 2.0',
+    'site': 'aonaware'
 }, {
-	'dictId': 'iciba.com',
-	'dictName': 'iciba.com',
-	'site': 'iciba.com'
+    'dictId': 'iciba.com',
+    'dictName': 'iciba.com',
+    'site': 'iciba.com'
 }];
 
 function postToAonaware(word, dictId, onSuccess, onFail) {
-	var url = 'http://services.aonaware.com/DictService/DictService.asmx/DefineInDict';
-	var obj = {
-		dictId: dictId,
-		word: word
-	};
-	$.post(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
+    var url = 'http://services.aonaware.com/DictService/DictService.asmx/DefineInDict';
+    var obj = {
+        dictId: dictId,
+        word: word
+    };
+    $.post(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
 }
 
 function postToDictCN(word, onSuccess, onFail) {
-	var url = 'http://dict.cn/mini.php';
-	var obj = {
-		q: word
-	};
-	$.post(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
+    var url = 'http://dict.cn/mini.php';
+    var obj = {
+        q: word
+    };
+    $.post(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
 }
 
 function postToCiba(word, onSuccess, onFail) {
-	var url = 'http://dict-co.iciba.com/api/dictionary.php';
-	var obj = {
-		w: word,
-		key: '0AAE477DB66EC58D12E1451877045CA5'
-	};
-	$.get(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
+    var url = 'http://dict-co.iciba.com/api/dictionary.php';
+    var obj = {
+        w: word,
+        key: '0AAE477DB66EC58D12E1451877045CA5'
+    };
+    $.get(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
 }
 
-chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
-		if (request.type === 'defineWord') {
-			console.log('defineWord: ' + request.word);
-			var dict = allDicts[0];
-			if (request.dictName) {
-				var res = allDicts.filter(function(d) {
-					return d.dictName === request.dictName;
-				});
-				dict = res.length ? res[0] : dict;
-			}
-			var onSuccess = function(data) {
-				console.log(data);
-				sendResponse({
-					data: data,
-					dict: dict
-				});
-			};
-			var onFail = function() {
-				console.error('send request to web service failed!');
-				sendResponse(false);
-			};
+function setBrowserIcon(enable) {
+    var title = '已打开鼠标取词功能',
+        imgPath = 'images/icon-on19.png';
+    if (!enable) {
+        title = '已关闭鼠标取词功能';
+        imgPath = 'images/icon-off19.png';
+    }
+    chrome.browserAction.setTitle({
+        title: title
+    });
+    chrome.browserAction.setIcon({
+        path: imgPath
+    });
+}
 
-			if (dict.site === 'dict.cn') {
-				postToDictCN(request.word, onSuccess, onFail);
-			} else if (dict.site === 'aonaware') {
-				postToAonaware(request.word, dict.dictId, onSuccess, onFail);
-			} else if(dict.site === 'iciba.com'){
-				postToCiba(request.word, onSuccess, onFail);
-			}
-			return true;
-		}
-	}
+(function Init() {
+    if (Settings.getValue('enableMinidict') === undefined) {
+        Settings.setValue('enableMinidict', true);
+    }
+    setBrowserIcon(Settings.getValue('enableMinidict'));
+}());
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+    var b = !Settings.getValue('enableMinidict');
+    Settings.setValue('enableMinidict', b);
+    setBrowserIcon(b);
+});
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        if (request.type === 'ifEnable') {
+            sendResponse(Settings.getValue('enableMinidict'));
+        } else if (request.type === 'keySettings') {
+            sendResponse({
+                specialKeys: 'ctrl,shift',
+                normalKey: 'X'
+            });
+        } else if (request.type === 'defineWord') {
+            console.log('defineWord: ' + request.word);
+            var dict = allDicts[0];
+            if (request.dictName) {
+                var res = allDicts.filter(function(d) {
+                    return d.dictName === request.dictName;
+                });
+                dict = res.length ? res[0] : dict;
+            }
+            var onSuccess = function(data) {
+                console.log(data);
+                sendResponse({
+                    data: data,
+                    dict: dict
+                });
+            };
+            var onFail = function() {
+                console.error('send request to web service failed!');
+                sendResponse(false);
+            };
+
+            if (dict.site === 'dict.cn') {
+                postToDictCN(request.word, onSuccess, onFail);
+            } else if (dict.site === 'aonaware') {
+                postToAonaware(request.word, dict.dictId, onSuccess, onFail);
+            } else if (dict.site === 'iciba.com') {
+                postToCiba(request.word, onSuccess, onFail);
+            }
+            return true;
+        }
+    }
 );

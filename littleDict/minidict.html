@@ -14,8 +14,6 @@
 </head>
 
 <body>
-<div class='.dictouter'>
-
 <!-- Modal -->
 <div class="modal in" id="littleDict" tabindex="-1" role="dialog" aria-labelledby="minidictLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -24,13 +22,13 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 
         <!-- input box -->
-        <form class="form-inline" role="form">
+        <form class="form-inline" role="form" onsubmit="return false;">
           <div class="form-group">
-            <input type="text" class="form-control" id="dict_input" placeholder="input word">
+            <input type="text" class="form-control dict_input" placeholder="input word">
           </div>
 
-          <button type="submit" class="btn btn-sm btn-primary" id="dict_query">查词</button>
-          <button type="submit" class="btn btn-sm btn-primary" id="dict_translate">翻译</button>
+          <button type="submit" class="btn btn-sm btn-primary dict_query">查词</button>
+          <button type="submit" class="btn btn-sm btn-primary dict_translate">翻译</button>
 
 
           <i class="icon-circle-arrow-left icon-large"></i>
@@ -70,25 +68,18 @@
   <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-
-</div>
 <script type="text/javascript">
-  jQuery('#littleDict').modal({
-    show: true
+
+  jQuery(document).bind('keydown', function (evt){
+    console.log(evt);
+    if(evt.keyCode === 'X'.charCodeAt(0)){
+        jQuery('#littleDict').modal({
+          show: true
+        });
+    }
   });
 
-  jQuery('.sound').each(function(i, el){
-    var src = jQuery(el).attr('audio');
-    var m = new Audio(src);
-    el.media = m;
-
-  });
-  jQuery('.sound').click(function(e){
-    if(this.media)
-      this.media.play();
-  });
-
-  </script>
+</script>
 
 </body>
 
