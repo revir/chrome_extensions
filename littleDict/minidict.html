@@ -9,8 +9,6 @@
   <link rel="stylesheet" type="text/css" href="css/custom.css">
   <script src="js/jquery-1.10.2.js"></script>
   <script src="js/bootstrap.js"></script>
-
-
 </head>
 
 <body>
@@ -34,20 +32,11 @@
           <i class="icon-circle-arrow-left icon-large"></i>
           <div class="form-group">
             <div class="dropdown">
-              <a data-toggle="dropdown" href="#">Dropdown trigger
+              <button data-toggle="dropdown" class="btn dropdown-toggle btn-default dict_name" type="button" id="dropdownMenu1">Dictionary Name
                   <span class="caret"></span>
-              </a>
+              </button>
 
-              <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Action</a>
-                </li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Another action</a>
-                </li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Something else here</a>
-                </li>
-                <li role="presentation" class="divider"></li>
-                <li role="presentation"><a role="menuitem" tabindex="-1" href="#">Separated link</a>
-                </li>
+              <ul class="dropdown-menu dict_list" role="menu" aria-labelledby="dropdownMenu1">
               </ul>
             </div>
           </div>
@@ -69,15 +58,20 @@
 </div>
 <!-- /.modal -->
 <script type="text/javascript">
-
-  jQuery(document).bind('keydown', function (evt){
-    console.log(evt);
-    if(evt.keyCode === 'X'.charCodeAt(0)){
-        jQuery('#littleDict').modal({
-          show: true
-        });
-    }
-  });
+    var frameStr = '<iframe src="http://dict.cn/mini.php?q=amaze"></iframe>'
+    // var frame = document.createElement('iframe');
+    // frame.src = 'http://dict.cn/mini.php?q=amaze';
+    jQuery('#littleDict .dict-result').append(frameStr);
+    jQuery('#littleDict').modal({
+      show: true
+    });
+    // jQuery('#littleDict iframe').css('property', 'value');
+  // jQuery(document).bind('keydown', function (evt){
+    // console.log(evt);
+    // if(evt.keyCode === 'X'.charCodeAt(0)){
+        
+    // }
+  // });
 
 </script>
 

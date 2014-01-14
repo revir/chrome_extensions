@@ -21,44 +21,27 @@
 console.info('[temp] core init...');
 
 var allDicts = [{
-    'dictId': 'dict.cn',
     'dictName': 'dict.cn',
-    'site': 'dict.cn'
+    'entry': 'DictCN'
 }, {
-    'dictId': 'wn',
     'dictName': 'WordNet (r) 2.0',
-    'site': 'aonaware'
+    'entry': 'Aonaware',
+    'baseUrl': 'http://services.aonaware.com/DictService/DictService.asmx/DefineInDict',
+    'queryType': 'post',
+    'params': {
+        'dictId': 'wn'
+    },
+    'queryKey': 'word'
 }, {
-    'dictId': 'iciba.com',
     'dictName': 'iciba.com',
-    'site': 'iciba.com'
+    'entry': 'Iciba',
+    'baseUrl': 'http://dict-co.iciba.com/api/dictionary.php',
+    'queryType': 'get',
+    'params': {
+        'key': '0AAE477DB66EC58D12E1451877045CA5'
+    },
+    'queryKey': 'w'
 }];
-
-function postToAonaware(word, dictId, onSuccess, onFail) {
-    var url = 'http://services.aonaware.com/DictService/DictService.asmx/DefineInDict';
-    var obj = {
-        dictId: dictId,
-        word: word
-    };
-    $.post(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
-}
-
-function postToDictCN(word, onSuccess, onFail) {
-    var url = 'http://dict.cn/mini.php';
-    var obj = {
-        q: word
-    };
-    $.post(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
-}
-
-function postToCiba(word, onSuccess, onFail) {
-    var url = 'http://dict-co.iciba.com/api/dictionary.php';
-    var obj = {
-        w: word,
-        key: '0AAE477DB66EC58D12E1451877045CA5'
-    };
-    $.get(url, obj, onSuccess, 'text').fail(onFail).error(onFail);
-}
 
 function setBrowserIcon(enable) {
     var title = '已打开鼠标取词功能',
@@ -97,6 +80,8 @@ chrome.runtime.onMessage.addListener(
                 specialKeys: 'ctrl,shift',
                 normalKey: 'X'
             });
+        } else if (request.type === 'dictList') {
+            sendResponse(allDicts);
         } else if (request.type === 'defineWord') {
             console.log('defineWord: ' + request.word);
             var dict = allDicts[0];
@@ -118,13 +103,10 @@ chrome.runtime.onMessage.addListener(
                 sendResponse(false);
             };
 
-            if (dict.site === 'dict.cn') {
-                postToDictCN(request.word, onSuccess, onFail);
-            } else if (dict.site === 'aonaware') {
-                postToAonaware(request.word, dict.dictId, onSuccess, onFail);
-            } else if (dict.site === 'iciba.com') {
-                postToCiba(request.word, onSuccess, onFail);
-            }
+            var params = $.extend(true, {}, dict.params);
+            params[dict.queryKey] = request.word;
+            $[dict.queryType](dict.baseUrl, params, onSuccess, 'text').fail(onFail).error(onFail);
+            
             return true;
         }
     }

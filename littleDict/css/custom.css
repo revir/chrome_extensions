@@ -15,3 +15,9 @@
 .modal-body .icon-coffee, .modal-body .icon-volume-up{
     color: black;
 }
+
+.modal-body iframe{
+    border: none;
+    height: 350px;
+    width: 100%;
+}

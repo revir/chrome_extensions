@@ -37,7 +37,14 @@ jQuery.get(chrome.extension.getURL('css/bootstrap.css'), function(cssdata) {
                 jQuery('.littleDictWrapper').html(jQuery(h).filter('div#littleDict'));
                 jQuery('.dict_query', h).click(function(event) {
                     var text = jQuery('.dict_input', h).val();
-                    defineWord(text);
+                    var dictName = jQuery('.dict_name').text();
+                    queryDict(text, dictName);
+                });
+                jQuery('.dict_list', h).click(function(event) {
+                    $(this).parents('.dropdown').find('.dict_name').text($(event.target).text());
+                    var text = jQuery('.dict_input', h).val();
+                    var dictName = jQuery('.dict_name').text();
+                    queryDict(text, dictName);
                 });
             }, 'text');
         }, 'text');
@@ -58,24 +65,15 @@ function parseAonaware(text) {
     });
 }
 
-function parseDictCN(text) {
-    // var xmlobject = new DOMParser().parseFromString(text, "text/xml");
-    // var style = $('style', xmlobject).text();
-    // var st = '<style scoped>'+style+'</stype>';
-    var frame = document.createElement('iframe');
-    frame.src = 'http://dict.cn';
-    $('#littleDict .dict-result').append(res);
-}
-
 function parseIciba(text) {
     var d = $(document.createElement('div'));
     var xml = jQuery.parseXML(text);
-    d.append('<h3></h3>');
+    d.append('<h4></h4>');
     jQuery('ps', xml).each(function(index, el) {
         var t = jQuery(el).text();
         var audio = jQuery(el).next('pron').text();
         var n = '<span class="pron">' + t + '&nbsp<i class="icon-volume-up icon-middle sound"></i>' + '<audio src="' + audio + '"></audio>&nbsp&nbsp&nbsp&nbsp' + '</span>';
-        jQuery('h3', d).append(n);
+        jQuery('h4', d).append(n);
     });
     jQuery('.sound', d).click(function(e) {
         jQuery(this).next('audio')[0].play();
@@ -96,30 +94,45 @@ function parseIciba(text) {
     $('#littleDict .dict-result').append(d);
 }
 
-function defineWord(word) {
+function parseDictCN(word) {
+    var src = "http://dict.cn/mini.php?q=" + word;
+    var frameStr = '<iframe src="' + src + '"></iframe>';
+    $('#littleDict .dict-result').append(frameStr);
+}
+
+function queryDict(word, dictName) {
     if (!word)
+    //TODO： display sth
         return;
-    chrome.runtime.sendMessage({
-        type: 'defineWord',
-        word: word,
-        dictName: 'iciba.com'
-    }, function(response) {
+    if (dictName === 'dict.cn') {
         $('#littleDict .dict-result').html('');
+        parseDictCN(word);
+    } else {
+        chrome.runtime.sendMessage({
+            type: 'defineWord',
+            word: word,
+            dictName: dictName
+        }, function(response) {
+            $('#littleDict .dict-result').html('');
+            if (!response) {
+                console.error('define word error!');
+                $('#littleDict .dict-result').text('查询错误!');
+                return;
+            }
+            window['parse' + response.dict.entry](response.data);
+        });
+    }
+}
 
-        if (!response) {
-            console.error('define word error!');
-            $('#littleDict .dict-result').text('查询错误!');
-            return;
-        }
-
-        if (response.dict.site === 'aonaware') {
-            parseAonaware(response.data);
-        } else if (response.dict.site === 'dict.cn') {
-            parseDictCN(response.data);
-        } else if (response.dict.site === 'iciba.com') {
-            parseIciba(response.data);
-        }
+function updateDictList(dictList) {
+    $('#littleDict .dict_list').html('');
+    $.each(dictList, function(index, dict) {
+        var t = '<li><a class="dict_item" href="#">' + dict.dictName + '</a></li>';
+        $('#littleDict .dict_list').append(t);
     });
+    var defaultName = dictList[0].dictName;
+    $('#littleDict .dict_name').text(defaultName);
+    return defaultName;
 }
 
 function showMiniDict() {
@@ -131,8 +144,21 @@ function showMiniDict() {
     jQuery('#littleDict').modal({
         show: true
     });
-    defineWord(text);
+    if ($('#littleDict .dict_list .dict_item').length) {
+        var dictName = $('#littleDict .dict_name').text();
+        queryDict(text, dictName);
+    } else {
+        chrome.runtime.sendMessage({
+            type: 'dictList',
+        }, function(datas) {
+            if (datas && datas.length) {
+                var defaultDictName = updateDictList(datas);
+                queryDict(text, defaultDictName);
+            }
+        });
+    }
 }
+
 jQuery(document).mouseup(function() {
     if (window.getSelection().toString()) {
         chrome.runtime.sendMessage({
