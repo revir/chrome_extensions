@@ -18,40 +18,9 @@
 //  Author: Revir Qing (aguidetoshanghai.com)
 //  URL: www.aguidetoshanghai.com
 
-var loadingHtml = '<i class="icon-spinner icon-spin icon-2x pull-left"></i>正在查询...';
-
-jQuery.scoped(); // Initialize the plugin
-
-// jQuery(document.body).append('<div id="littleDict_wrapper"><style scoped> @import url(\'css/bootstrap.css\');  </style> <div id="littleDict_minidict"></div> </div>');
-jQuery(document.body).append('<div class="littleDictDiv"><style scoped> </style> <div class="littleDictWrapper"></div> </div>');
-// jQuery("#littleDict_wrapper").append('<div id="littleDict_minidict"></div>');
-//initialize minidict
-jQuery.get(chrome.extension.getURL('css/bootstrap.css'), function(cssdata) {
-    jQuery('.littleDictDiv style').html(cssdata);
-    jQuery.get(chrome.extension.getURL('css/font-awesome.css'), function(cssdata) {
-        jQuery('.littleDictDiv style').append(cssdata);
-        jQuery.get(chrome.extension.getURL('css/custom.css'), function(cssdata) {
-            jQuery('.littleDictDiv style').append(cssdata);
-            jQuery.get(chrome.extension.getURL('/minidict.html'), function(minidict_html) {
-                var h = jQuery.parseHTML(minidict_html);
-                jQuery('.littleDictWrapper').html(jQuery(h).filter('div#littleDict'));
-                jQuery('.dict_query', h).click(function(event) {
-                    var text = jQuery('.dict_input', h).val();
-                    var dictName = jQuery('.dict_name').text();
-                    queryDict(text, dictName);
-                });
-                jQuery('.dict_list', h).click(function(event) {
-                    $(this).parents('.dropdown').find('.dict_name').text($(event.target).text());
-                    var text = jQuery('.dict_input', h).val();
-                    var dictName = jQuery('.dict_name').text();
-                    queryDict(text, dictName);
-                });
-            }, 'text');
-        }, 'text');
-    }, 'text');
-}, 'text');
-
-function parseAonaware(text) {
+var manager = {};
+manager.loadingHtml = '<i class="icon-spinner icon-spin icon-2x pull-left"></i>正在查询...';
+manager.parseAonaware = function(text) {
     var xmlobject = new DOMParser().parseFromString(text, "text/xml");
     jQuery('Definition', xmlobject).each(function() {
         var word = jQuery('Word', this).text(),
@@ -63,9 +32,9 @@ function parseAonaware(text) {
 
         return false;
     });
-}
+};
 
-function parseIciba(text) {
+manager.parseIciba = function(text) {
     var d = $(document.createElement('div'));
     var xml = jQuery.parseXML(text);
     d.append('<h4></h4>');
@@ -74,9 +43,6 @@ function parseIciba(text) {
         var audio = jQuery(el).next('pron').text();
         var n = '<span class="pron">' + t + '&nbsp<i class="icon-volume-up icon-middle sound"></i>' + '<audio src="' + audio + '"></audio>&nbsp&nbsp&nbsp&nbsp' + '</span>';
         jQuery('h4', d).append(n);
-    });
-    jQuery('.sound', d).click(function(e) {
-        jQuery(this).next('audio')[0].play();
     });
 
     jQuery('pos', xml).each(function(i, el) {
@@ -92,21 +58,21 @@ function parseIciba(text) {
         d.append(s2);
     });
     $('#littleDict .dict-result').append(d);
-}
+};
 
-function parseDictCN(word) {
+manager.parseDictCN = function(word) {
     var src = "http://dict.cn/mini.php?q=" + word;
     var frameStr = '<iframe src="' + src + '"></iframe>';
     $('#littleDict .dict-result').append(frameStr);
-}
+};
 
-function queryDict(word, dictName) {
+manager.queryDict = function(word, dictName) {
     if (!word)
     //TODO： display sth
         return;
     if (dictName === 'dict.cn') {
         $('#littleDict .dict-result').html('');
-        parseDictCN(word);
+        manager.parseDictCN(word);
     } else {
         chrome.runtime.sendMessage({
             type: 'defineWord',
@@ -119,12 +85,12 @@ function queryDict(word, dictName) {
                 $('#littleDict .dict-result').text('查询错误!');
                 return;
             }
-            window['parse' + response.dict.entry](response.data);
+            manager['parse' + response.dict.entry](response.data);
         });
     }
-}
+};
 
-function updateDictList(dictList) {
+manager.updateDictList = function(dictList) {
     $('#littleDict .dict_list').html('');
     $.each(dictList, function(index, dict) {
         var t = '<li><a class="dict_item" href="#">' + dict.dictName + '</a></li>';
@@ -133,31 +99,72 @@ function updateDictList(dictList) {
     var defaultName = dictList[0].dictName;
     $('#littleDict .dict_name').text(defaultName);
     return defaultName;
-}
+};
 
-function showMiniDict() {
+manager.showMiniDict = function() {
     var selNode = window.getSelection();
     var text = selNode.toString();
     console.log('select words: ' + text);
-    $('#littleDict .dict-result').html(loadingHtml);
+    $('#littleDict .dict-result').html(manager.loadingHtml);
     jQuery('#littleDict .dict_input').val(text);
     jQuery('#littleDict').modal({
         show: true
     });
     if ($('#littleDict .dict_list .dict_item').length) {
         var dictName = $('#littleDict .dict_name').text();
-        queryDict(text, dictName);
+        manager.queryDict(text, dictName);
     } else {
         chrome.runtime.sendMessage({
             type: 'dictList',
         }, function(datas) {
             if (datas && datas.length) {
-                var defaultDictName = updateDictList(datas);
-                queryDict(text, defaultDictName);
+                var defaultDictName = manager.updateDictList(datas);
+                manager.queryDict(text, defaultDictName);
             }
         });
     }
-}
+};
+
+jQuery.scoped(); // Initialize the plugin
+
+// jQuery(document.body).append('<div id="littleDict_wrapper"><style scoped> @import url(\'css/bootstrap.css\');  </style> <div id="littleDict_minidict"></div> </div>');
+jQuery(document.body).append('<div class="littleDictDiv"><style scoped> </style> <div class="littleDictWrapper"></div> </div>');
+// jQuery("#littleDict_wrapper").append('<div id="littleDict_minidict"></div>');
+//initialize minidict
+jQuery.get(chrome.extension.getURL('css/bootstrap.css'), function(cssdata) {
+    jQuery('.littleDictDiv style').html(cssdata);
+    jQuery.get(chrome.extension.getURL('css/font-awesome.css'), function(cssdata) {
+        jQuery('.littleDictDiv style').append(cssdata);
+        jQuery.get(chrome.extension.getURL('css/custom.css'), function(cssdata) {
+            jQuery('.littleDictDiv style').append(cssdata);
+            jQuery.get(chrome.extension.getURL('/minidict.html'), function(minidict_html) {
+                var h = jQuery.parseHTML(minidict_html);
+                var mainNode = jQuery(h).filter('div#littleDict');
+                jQuery('.littleDictWrapper').html(mainNode);
+                mainNode.click(function(event){
+                    var node = jQuery(event.target);
+                    var _queryDict = function(){
+                        var text = jQuery('.dict_input', mainNode).val();
+                        var dictName = jQuery('.dict_name', mainNode).text();
+                        manager.queryDict(text, dictName);
+                    };
+                    if(node.is('.dict_list li a')){
+                        $('.dict_name', mainNode).text(node.text());
+                        _queryDict();
+                    }
+                    if(node.is('.dict_query')){
+                        _queryDict();
+                    }
+                    if(node.is('.sound')){
+                        var a = node.next('audio');
+                        if(a.length)
+                            a[0].play();
+                    }
+                });
+            }, 'text');
+        }, 'text');
+    }, 'text');
+}, 'text');
 
 jQuery(document).mouseup(function() {
     if (window.getSelection().toString()) {
@@ -165,7 +172,7 @@ jQuery(document).mouseup(function() {
             type: 'ifEnable',
         }, function(enable) {
             if (enable) {
-                showMiniDict();
+                manager.showMiniDict();
             }
         });
     }
@@ -186,7 +193,7 @@ jQuery(document).mouseup(function() {
                 if (event.keyCode !== datas.normalKey.charCodeAt(0))
                     b = false;
                 if (b)
-                    showMiniDict();
+                    manager.showMiniDict();
             });
         }
     });

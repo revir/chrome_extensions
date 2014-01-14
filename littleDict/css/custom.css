@@ -1,23 +1,31 @@
-.modal-header .icon-circle-arrow-left {
+#littleDict .icon-circle-arrow-left {
 	margin-left: 30px;
 	margin-right: 5px;
 }
-.modal-header .icon-circle-arrow-right {
+#littleDict .icon-circle-arrow-right {
 	margin-left: 5px;
 }
 
-.modal-body .pron{
+#littleDict .pron{
     color: rgb(58, 120, 213);
 }
-.modal-body .example{
+#littleDict .example{
     color: rgb(162, 111, 20);
 }
-.modal-body .icon-coffee, .modal-body .icon-volume-up{
+#littleDict .icon-coffee, #littleDict .icon-volume-up{
     color: black;
 }
 
-.modal-body iframe{
+#littleDict .modal-body{
+	padding-top: 5px;
+}
+
+#littleDict iframe{
     border: none;
     height: 350px;
     width: 100%;
+}
+
+#littleDict {
+	text-align: left;
 }
