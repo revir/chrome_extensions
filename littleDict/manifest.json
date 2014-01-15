@@ -9,7 +9,7 @@
     },
     "content_scripts": [{
         "js": ["js/jquery-1.10.2.js","js/jquery.scoped.js", "js/bootstrap.js", "common.js", "page.js"],
-        // "css": ["css/bootstrap.min.css"],
+        "css":["css/bootstrap.css", "css/custom.css"],
         "matches": ["<all_urls>"]
     }],
     "web_accessible_resources": [

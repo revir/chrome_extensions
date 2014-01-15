@@ -1,31 +1,31 @@
-#littleDict .icon-circle-arrow-left {
+.littleDictWrapper .icon-circle-arrow-left {
 	margin-left: 30px;
 	margin-right: 5px;
 }
-#littleDict .icon-circle-arrow-right {
+.littleDictWrapper .icon-circle-arrow-right {
 	margin-left: 5px;
 }
 
-#littleDict .pron{
+.littleDictWrapper .pron{
     color: rgb(58, 120, 213);
 }
-#littleDict .example{
+.littleDictWrapper .example{
     color: rgb(162, 111, 20);
 }
-#littleDict .icon-coffee, #littleDict .icon-volume-up{
+.littleDictWrapper .icon-coffee, .littleDictWrapper .icon-volume-up{
     color: black;
 }
 
-#littleDict .modal-body{
+.littleDictWrapper .modal-body{
 	padding-top: 5px;
 }
 
-#littleDict iframe{
+.littleDictWrapper iframe{
     border: none;
     height: 350px;
     width: 100%;
 }
 
-#littleDict {
+.littleDictWrapper {
 	text-align: left;
 }

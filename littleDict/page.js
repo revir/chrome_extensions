@@ -128,41 +128,36 @@ manager.showMiniDict = function() {
 jQuery.scoped(); // Initialize the plugin
 
 // jQuery(document.body).append('<div id="littleDict_wrapper"><style scoped> @import url(\'css/bootstrap.css\');  </style> <div id="littleDict_minidict"></div> </div>');
-jQuery(document.body).append('<div class="littleDictDiv"><style scoped> </style> <div class="littleDictWrapper"></div> </div>');
+jQuery(document.body).append('<div class="littleDictWrapper"> <style scoped></style> </div>');
 // jQuery("#littleDict_wrapper").append('<div id="littleDict_minidict"></div>');
 //initialize minidict
-jQuery.get(chrome.extension.getURL('css/bootstrap.css'), function(cssdata) {
-    jQuery('.littleDictDiv style').html(cssdata);
-    jQuery.get(chrome.extension.getURL('css/font-awesome.css'), function(cssdata) {
-        jQuery('.littleDictDiv style').append(cssdata);
-        jQuery.get(chrome.extension.getURL('css/custom.css'), function(cssdata) {
-            jQuery('.littleDictDiv style').append(cssdata);
-            jQuery.get(chrome.extension.getURL('/minidict.html'), function(minidict_html) {
-                var h = jQuery.parseHTML(minidict_html);
-                var mainNode = jQuery(h).filter('div#littleDict');
-                jQuery('.littleDictWrapper').html(mainNode);
-                mainNode.click(function(event){
-                    var node = jQuery(event.target);
-                    var _queryDict = function(){
-                        var text = jQuery('.dict_input', mainNode).val();
-                        var dictName = jQuery('.dict_name', mainNode).text();
-                        manager.queryDict(text, dictName);
-                    };
-                    if(node.is('.dict_list li a')){
-                        $('.dict_name', mainNode).text(node.text());
-                        _queryDict();
-                    }
-                    if(node.is('.dict_query')){
-                        _queryDict();
-                    }
-                    if(node.is('.sound')){
-                        var a = node.next('audio');
-                        if(a.length)
-                            a[0].play();
-                    }
-                });
-            }, 'text');
-        }, 'text');
+jQuery.get(chrome.extension.getURL('css/font-awesome.css'), function(cssdata) {
+    jQuery('.littleDictWrapper style').append(cssdata);
+
+    jQuery.get(chrome.extension.getURL('/minidict.html'), function(minidict_html) {
+        var h = jQuery.parseHTML(minidict_html);
+        var mainNode = jQuery(h).filter('div#littleDict');
+        jQuery('.littleDictWrapper').append(mainNode);
+        mainNode.click(function(event) {
+            var node = jQuery(event.target);
+            var _queryDict = function() {
+                var text = jQuery('.dict_input', mainNode).val();
+                var dictName = jQuery('.dict_name', mainNode).text();
+                manager.queryDict(text, dictName);
+            };
+            if (node.is('.dict_list li a')) {
+                $('.dict_name', mainNode).text(node.text());
+                _queryDict();
+            }
+            if (node.is('.dict_query')) {
+                _queryDict();
+            }
+            if (node.is('.sound')) {
+                var a = node.next('audio');
+                if (a.length)
+                    a[0].play();
+            }
+        });
     }, 'text');
 }, 'text');
 
